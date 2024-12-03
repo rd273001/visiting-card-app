@@ -5,8 +5,10 @@ const RootLayout: React.FC = () => {
   return (
     <Stack screenOptions={ { headerShown: false } }>
       <Stack.Screen name='index' />
-      <Stack.Screen name='card' />
+      <Stack.Screen name='visiting-card' />
       <Stack.Screen name='payment' />
+      <Stack.Screen name='loading' />
+      <Stack.Screen name='error' />
     </Stack>
   )
 };
