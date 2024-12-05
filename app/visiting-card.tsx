@@ -14,7 +14,9 @@ const VisitingCardScreen: React.FC = () => {
   const viewShotRef = useRef( null );
 
   const handleShareVisitingCardImage = useCallback( async () => {
-    await handlePayment( params );
+    const status = await handlePayment( params );
+    // Share Card after transaction successfull
+    if ( status === 'failure' ) return;
     handleShareVisitingCard( viewShotRef, 'visiting-card', 'Check out my visiting card!' );
   }, [] );
 

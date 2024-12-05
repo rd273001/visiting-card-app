@@ -16,6 +16,11 @@
         "foregroundImage": "./assets/images/visiting-card-logo.png",
         "backgroundColor": "#ffffff"
       },
+      "splash": {
+        "image": "./assets/images/visiting-card-logo.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
+      },
       "package": "com.ravidubey.visitingcardapp"
     },
     "web": {

@@ -17,27 +17,23 @@ export const handlePayment = async ( details: Details ) => {
     order_id: '',
     prefill: {
       email: email,
-      // contact: phone,
       name: name,
     },
-    modal: {
-      animation: true,
-    },
     redirect: true,
-    timeout: 10,
-    theme: { color: '#EC0BAE' },
   };
+
+  let status: 'success' | 'failure' = 'failure';
 
   /* loads and start transaction process */
   try {
     const data = await RazorpayCheckout.open( options )
     // handle success
-    ToastAndroid.showWithGravity( `Success: ${data.razorpay_payment_id}`, ToastAndroid.SHORT, height * 0.1 );
+    status = 'success';
+    ToastAndroid.showWithGravity( `Payment Successfull Id: ${data.razorpay_payment_id}`, ToastAndroid.LONG, height * 0.1 );
   } catch ( error: ErrorResponse | any ) {
     // handle failure
-    ToastAndroid.showWithGravity( `Error: ${error.description}`, ToastAndroid.SHORT, height * 0.1 );
+    ToastAndroid.showWithGravity( `Error: ${error.error.reason}`, ToastAndroid.LONG, height * 0.1 );
   }
 
-  // Share Card after transaction
-  // handleShare();
+  return status;
 };
