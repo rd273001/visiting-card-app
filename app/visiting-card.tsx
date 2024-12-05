@@ -1,42 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Card, Divider, Icon, Paragraph, Title } from 'react-native-paper';
-import { shareAsync } from 'expo-sharing';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { height, width } from '@/utils/dimension';
 import PaperButton from '@/components/Button';
 import ViewShot from 'react-native-view-shot';
+import { Details } from '@/types/details';
+import { handlePayment } from '@/utils/handlePayment';
+import { handleShareVisitingCard } from '@/utils/handleShare';
 
 const VisitingCardScreen: React.FC = () => {
-  const params = useLocalSearchParams();
-  const router = useRouter();
+  const params = useLocalSearchParams() as unknown as Details;
   const viewShotRef = useRef( null );
 
-  useEffect( () => {
-    const timeoutId = setTimeout( () => {
-      router.push( { pathname: '/loading', params } );
-    }, 5000 );
-    return () => clearTimeout( timeoutId );
+  const handleShareVisitingCardImage = useCallback( async () => {
+    await handlePayment( params );
+    handleShareVisitingCard( viewShotRef, 'visiting-card', 'Check out my visiting card!' );
   }, [] );
-
-  const handleShareVisitingCardImage = async () => {
-    try {
-      const uri = await viewShotRef.current?.capture();
-      console.log( 'URI => ', uri );
-
-      if ( uri ) {
-        console.log( 'Captured...' );
-        // Share the captured image
-        await shareAsync( uri, {
-          mimeType: 'image/jpeg',
-          dialogTitle: 'Share image',
-          UTI: 'public.jpeg',
-        } );
-      }
-    } catch ( err: Error | any ) {
-      console.log( 'Error in sharing => ', err );
-    }
-  };
 
   const contactInfo = [
     { icon: 'phone-outline', label: `Mobile Number: ${params.phone}` },
@@ -48,24 +28,23 @@ const VisitingCardScreen: React.FC = () => {
     <View style={ styles.container }>
       <Text style={ [styles.description, styles.txtWhite] }>Preview Your Visiting Card</Text>
 
-        <ViewShot ref={ viewShotRef } options={ { format: 'jpg', quality: 1 } }>
-          <Card style={ styles.card }>
-            <Card.Content>
-              <Title style={ [styles.title, styles.txtWhite] }>{ params.name }</Title>
-              <Paragraph style={ [styles.designation, styles.txtWhite] }>{ params.designation }</Paragraph>
-              <Divider style={ styles.divider } />
-              { contactInfo.map( ( info, index ) => (
-                <View key={ index } style={ styles.row }>
-                  <Icon source={ info.icon } color='#fff' size={ 24 } />
-                  <Paragraph style={ [styles.txtWhite, styles.infoTxt] }>{ info.label }</Paragraph>
-                </View>
-              ) ) }
-            </Card.Content>
-          </Card>
-        </ViewShot>
+      <ViewShot ref={ viewShotRef }>
+        <Card style={ styles.card }>
+          <Card.Content>
+            <Title style={ [styles.title, styles.txtWhite] }>{ params.name }</Title>
+            <Paragraph style={ [styles.designation, styles.txtWhite] }>{ params.designation }</Paragraph>
+            <Divider style={ styles.divider } />
+            { contactInfo.map( ( info, index ) => (
+              <View key={ index } style={ styles.row }>
+                <Icon source={ info.icon } color='#fff' size={ 24 } />
+                <Paragraph style={ [styles.txtWhite, styles.infoTxt] }>{ info.label }</Paragraph>
+              </View>
+            ) ) }
+          </Card.Content>
+        </Card>
+      </ViewShot>
 
       <PaperButton icon='share-variant' onPress={ handleShareVisitingCardImage } label='Share Visiting Card' btnStyle={ { marginBottom: height * 0.03, alignSelf: 'center', width: '85%' } } />
-
     </View>
   );
 };
@@ -75,7 +54,8 @@ const styles = StyleSheet.create( {
     flex: 1,
     justifyContent: 'space-between',
     padding: width * 0.035,
-    backgroundColor: '#2E2E2E'
+    backgroundColor: '#2E2E2E',
+    gap: height * 0.1
   },
   description: {
     fontSize: 24,
@@ -83,14 +63,9 @@ const styles = StyleSheet.create( {
     marginVertical: height * 0.03,
     textAlign: 'center'
   },
-  cardContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
   card: {
     width: '100%',
-    marginVertical: height * 0.02,
-    backgroundColor: '#777'
+    backgroundColor: '#777',
   },
   title: {
     fontSize: 22,

@@ -1,19 +1,21 @@
+import { useLocalSearchParams } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Icon } from 'react-native-paper';
 
-type ErrorScreenProps = {
+type ErrorScreenParams = {
   error: Error;
-  stack: string;
 };
 
-const ErrorScreen: React.FC<ErrorScreenProps> = ( { error, stack } ) => {
+const ErrorScreen: React.FC = () => {
+  const params = useLocalSearchParams() as unknown as ErrorScreenParams;
+  const { error } = params;
+
   return (
     <View style={ styles.container }>
       <Icon source='error' size={ 48 } color='#E11D48' />
       <Text style={ styles.errorText }>An error occurred:</Text>
       <Text style={ styles.errorText }>{ error.message }</Text>
-      <Text style={ styles.stackText }>{ stack }</Text>
     </View>
   );
 };

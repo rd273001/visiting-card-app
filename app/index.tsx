@@ -39,7 +39,7 @@ const HomeScreen: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    if ( !validateInputs() ) {
+    if ( validateInputs() ) {
       router.push( {
         pathname: '/visiting-card',
         params: details as any,
